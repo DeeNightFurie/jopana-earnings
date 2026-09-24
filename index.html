@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jopana — What could you earn?</title>
+<meta name="description" content="Estimate your monthly income as a nurse, physiotherapist, doctor or caregiver with Jopana. Move the slider to see how shift length changes your earnings." />
+<meta name="theme-color" content="#0f766e" />
+<meta property="og:title" content="Jopana — What could you earn?" />
+<meta property="og:description" content="Estimate your monthly income with Jopana. Move the slider to see how shift length changes your earnings." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f766e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5'/%3E%3Cpath d='M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+/* Tokens lifted from jopana.in's live stylesheet. --primary is the accessible
+   teal and is the only one used for text; --teal-decorative never carries copy. */
+:root{
+  --primary:#0f766e; --primary-foreground:#fff; --teal-decorative:#14b8a6;
+  --background:#f7f7f7; --foreground:#0f0f0f;
+  --card:#fff; --muted-foreground:#6b7280;
+  --accent:#f0fdfa; --secondary:#ececec; --border:#e5e7eb;
+  --amber:#b45309; --radius:.5rem;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; padding:16px; min-height:100vh;
+  font-family:"Poppins",system-ui,-apple-system,sans-serif;
+  background:var(--background); color:var(--foreground);
+  font-size:15px; line-height:1.5;
+  display:flex; align-items:center; justify-content:center;
+}
+.card{
+  width:100%; max-width:1080px; background:var(--card);
+  border-radius:14px; overflow:hidden;
+  box-shadow:0 1px 3px rgba(15,15,15,.06),0 10px 32px rgba(15,15,15,.08);
+  display:grid; grid-template-columns:1fr;
+}
+@media(min-width:900px){ .card{grid-template-columns:1.25fr 1fr} }
+
+.panel{padding:24px}
+@media(min-width:640px){ .panel{padding:32px} }
+
+.badge{
+  display:inline-block; background:var(--accent); color:var(--primary);
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  padding:4px 10px; border-radius:999px;
+}
+h1{
+  font-family:"Lora",Georgia,serif; font-weight:700;
+  font-size:clamp(22px,5vw,30px); line-height:1.18;
+  margin:12px 0 6px; letter-spacing:-.01em;
+}
+.lede{color:var(--muted-foreground); font-size:14px; margin:0 0 4px}
+
+.group{margin-top:26px}
+.legend{
+  display:flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted-foreground); margin-bottom:10px;
+}
+.legend svg{width:14px;height:14px}
+.legend-row{display:flex;align-items:baseline;justify-content:space-between}
+.hours-readout{font-size:15px;font-weight:600;color:var(--primary);font-variant-numeric:tabular-nums}
+
+/* profession tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{
+  display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  padding:12px; text-align:left; cursor:pointer;
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  font:inherit; color:inherit; transition:border-color .15s,background .15s,box-shadow .15s;
+}
+.tile:hover{border-color:rgba(15,118,110,.4);background:rgba(240,253,250,.5)}
+.tile svg{width:20px;height:20px;color:var(--muted-foreground);transition:color .15s}
+.tile:hover svg{color:var(--primary)}
+.tile .name{font-size:14px;font-weight:500;line-height:1.25}
+.tile .tag{font-size:12px;color:var(--muted-foreground);line-height:1.25}
+.tile[aria-checked="true"]{
+  border-color:var(--primary); background:var(--accent);
+  box-shadow:0 1px 2px rgba(15,118,110,.12);
+}
+.tile[aria-checked="true"] svg{color:var(--primary)}
+
+/* speciality pills */
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{
+  padding:7px 15px; border-radius:999px; cursor:pointer;
+  background:var(--card); border:1px solid var(--border); color:var(--muted-foreground);
+  font:inherit; font-size:14px; font-weight:500; transition:all .15s;
+}
+.pill:hover{border-color:rgba(15,118,110,.4);color:var(--foreground)}
+.pill[aria-checked="true"]{
+  background:var(--primary); border-color:var(--primary); color:var(--primary-foreground);
+}
+.blurb{font-size:12px;color:var(--muted-foreground);margin:10px 0 0}
+
+/* slider */
+.slider-wrap{position:relative;display:flex;align-items:center;height:22px}
+.track,.fill{position:absolute;height:6px;border-radius:999px;pointer-events:none}
+.track{left:0;right:0;background:var(--secondary)}
+.fill{left:0;background:linear-gradient(90deg,var(--teal-decorative),var(--primary));transition:width .1s ease-out}
+.tick{position:absolute;width:6px;height:6px;border-radius:50%;transform:translateX(-50%);pointer-events:none}
+input[type=range]{
+  position:relative; width:100%; margin:0; background:transparent;
+  -webkit-appearance:none; appearance:none; cursor:grab;
+}
+input[type=range]:active{cursor:grabbing}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+  background:var(--primary); border:2px solid var(--card);
+  box-shadow:0 2px 8px rgba(15,118,110,.45); transition:transform .12s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.1)}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:var(--primary);
+  border:2px solid var(--card);box-shadow:0 2px 8px rgba(15,118,110,.45);
+}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(15,118,110,.35)}
+input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(15,118,110,.35)}
+.ends{display:flex;justify-content:space-between;font-size:11px;font-weight:500;color:var(--muted-foreground);margin-top:8px}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{
+  min-width:46px; padding:5px 9px; border-radius:6px; cursor:pointer;
+  background:var(--card); border:1px solid var(--border); color:var(--muted-foreground);
+  font:inherit; font-size:12px; font-weight:500; transition:all .15s;
+}
+.chip:hover{border-color:rgba(15,118,110,.4);color:var(--foreground)}
+.chip[aria-pressed="true"]{border-color:var(--primary);background:var(--accent);color:var(--primary)}
+
+.notice{
+  border:1px dashed var(--border); background:rgba(247,247,247,.7);
+  border-radius:var(--radius); padding:10px 12px; font-size:12px; color:var(--muted-foreground);
+}
+.notice b{color:var(--foreground);font-weight:600}
+
+/* mobile mirror of the live figure, so the number moves while you drag */
+.mobile-total{
+  display:flex; align-items:baseline; justify-content:space-between;
+  background:var(--accent); border-radius:var(--radius); padding:9px 13px; margin-top:12px;
+}
+.mobile-total span:first-child{font-size:12px;font-weight:500;color:var(--muted-foreground)}
+.mobile-total span:last-child{
+  font-family:"Lora",Georgia,serif; font-size:19px; font-weight:700;
+  color:var(--primary); font-variant-numeric:tabular-nums;
+}
+@media(min-width:900px){ .mobile-total{display:none} }
+
+/* days */
+.days-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+input[type=number]{
+  width:84px; padding:8px 10px; font:inherit; font-size:15px;
+  border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--card); color:var(--foreground);
+  font-variant-numeric:tabular-nums; -moz-appearance:textfield;
+}
+input[type=number]:focus-visible{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.25)}
+
+/* result */
+.result{
+  padding:24px; background:linear-gradient(160deg,var(--accent),var(--card));
+  border-top:1px solid var(--border);
+  display:flex; flex-direction:column; justify-content:center; gap:22px;
+}
+@media(min-width:640px){ .result{padding:32px} }
+@media(min-width:900px){ .result{border-top:0;border-left:1px solid var(--border)} }
+.result-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted-foreground);margin:0 0 4px;
+}
+.result-label svg{width:14px;height:14px;color:var(--primary)}
+.amount{
+  font-family:"Lora",Georgia,serif; font-weight:700;
+  font-size:clamp(34px,9vw,52px); line-height:1; color:var(--primary);
+  font-variant-numeric:tabular-nums; margin:0; letter-spacing:-.02em;
+}
+dl{margin:0;font-size:14px}
+.dl-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid rgba(229,231,235,.75)}
+.dl-row:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
+.dl-row dt{color:var(--muted-foreground)}
+.dl-row dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+.tier{
+  align-self:flex-start; background:var(--card); color:var(--primary);
+  border:1px solid rgba(15,118,110,.2); border-radius:999px;
+  padding:4px 11px; font-size:12px; font-weight:500;
+}
+.nudge{
+  border:1px solid rgba(15,118,110,.15); background:rgba(255,255,255,.7);
+  border-radius:var(--radius); padding:12px 14px; font-size:14px; color:var(--muted-foreground);
+}
+.nudge b{color:var(--foreground)} .nudge .up{color:var(--primary);font-weight:600}
+.cta{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%; padding:13px 18px; border:0; border-radius:var(--radius);
+  background:var(--primary); color:var(--primary-foreground);
+  font:inherit; font-size:15px; font-weight:600; cursor:pointer;
+  text-decoration:none; transition:background .15s,transform .08s;
+}
+.cta:hover{background:#0b5f59} .cta:active{transform:translateY(1px)}
+.cta svg{width:16px;height:16px}
+.fineprint{font-size:11px;line-height:1.5;color:var(--muted-foreground);text-align:center;margin:0}
+.hidden{display:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="card">
+  <section class="panel">
+    <span class="badge">Excellence in Care</span>
+    <h1>What could you earn with Jopana?</h1>
+    <p class="lede">Pick your practice and shift pattern. Your estimate updates as you move the slider.</p>
+
+    <div class="group">
+      <p class="legend">Profession</p>
+      <div class="tiles" id="professions" role="radiogroup" aria-label="Profession"></div>
+    </div>
+
+    <div class="group">
+      <p class="legend">Speciality</p>
+      <div class="pills" id="specialities" role="radiogroup" aria-label="Speciality"></div>
+      <p class="blurb" id="blurb"></p>
+    </div>
+
+    <div class="group">
+      <div class="legend-row">
+        <p class="legend" style="margin-bottom:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Hours per day
+        </p>
+        <span class="hours-readout" id="hoursReadout">12h</span>
+      </div>
+
+      <div id="sliderBlock" style="margin-top:10px">
+        <div class="slider-wrap">
+          <div class="track"></div>
+          <div class="fill" id="fill"></div>
+          <div id="ticks"></div>
+          <input type="range" id="slider" min="0" max="1" step="1" value="0" aria-label="Hours per day" />
+        </div>
+        <div class="ends"><span id="endMin">6h</span><span id="endMax">24h</span></div>
+        <div class="chips" id="hourChips"></div>
+      </div>
+
+      <div class="notice hidden" id="singleNotice"></div>
+      <div class="mobile-total"><span>Monthly estimate</span><span id="mobileTotal">₹0</span></div>
+    </div>
+
+    <div class="group">
+      <p class="legend">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+        Working days per month
+      </p>
+      <div class="days-row">
+        <input type="number" id="days" min="1" max="31" value="25" inputmode="numeric" aria-label="Working days per month" />
+        <div class="chips" id="dayChips" style="margin-top:0"></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="result">
+    <div>
+      <p class="result-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>
+        Estimated monthly income
+      </p>
+      <p class="amount" id="amount" aria-live="polite">₹0</p>
+    </div>
+
+    <dl>
+      <div class="dl-row"><dt>Per day</dt><dd id="perDay">—</dd></div>
+      <div class="dl-row"><dt>Effective hourly</dt><dd id="perHour">—</dd></div>
+      <div class="dl-row"><dt>Shift pattern</dt><dd id="pattern">—</dd></div>
+    </dl>
+
+    <span class="tier hidden" id="tier"></span>
+    <div class="nudge hidden" id="nudge"></div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <a class="cta" id="cta" href="https://jopana.in">Join Jopana as a Professional
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <p class="fineprint">Indicative only. Actual earnings vary with case mix, location and availability.<br />Rates as of 2026-09-24.</p>
+    </div>
+  </aside>
+</main>
+
+<script>
+/* Rates injected from src/pricing.ts at build time — the same file the
+   jopana.in React component imports, so the two cannot quote different numbers. */
+const DATA = {"professions":[{"id":"nursing","name":"Nursing","tagline":"Visits & continuous care","specialities":[{"id":"nursing-visits","name":"Nursing Visits","blurb":"Single-visit procedures billed per visit","type":"fixed","hourlyRate":600,"allowedHours":[1]},{"id":"continuous-care-nursing","name":"Continuous Care","blurb":"Flat shift rate, higher for longer shifts","type":"slab","slabs":{"6":1300,"12":1500,"24":1800},"allowedHours":[6,12,24]}]},{"id":"physio","name":"Physiotherapist","tagline":"Rehab & mobility","specialities":[{"id":"basic-care","name":"Basic Care","blurb":"General mobility and recovery support","type":"fixed","hourlyRate":400},{"id":"advanced-physio","name":"Advanced Physio Care","blurb":"Post-operative and neuro rehabilitation","type":"fixed","hourlyRate":600},{"id":"sports-physio","name":"Sports Physio","blurb":"Performance and sports-injury specialisation","type":"fixed","hourlyRate":800}]},{"id":"doctor","name":"Doctor","tagline":"Online & at-home consults","specialities":[{"id":"online-consultation","name":"Online Consultation","blurb":"Teleconsultation from anywhere","type":"fixed","hourlyRate":1000},{"id":"home-consultation","name":"At Home Consultation","blurb":"In-person consultation at the patient's home","type":"fixed","hourlyRate":1500}]},{"id":"gda","name":"Caregiver (GDA)","tagline":"Daily living assistance","specialities":[{"id":"continuous-care-gda","name":"Continuous Care","blurb":"Flat shift rate for attendant care","type":"slab","slabs":{"12":800,"24":900},"allowedHours":[12,24]}]}],"defaultHourPresets":[1,2,4,6,8,12,24]};
+
+/* The pure helpers below mirror pricing.ts one-for-one. Logic is duplicated
+   here because the browser cannot import TypeScript; the RATES are not. */
+const ICONS = {
+  nursing:'<path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
+  physio:'<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+  doctor:'<path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>',
+  gda:'<path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95"/><path d="m2 15 6 6"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"/>',
+};
+const INR = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+const fmt = (n) => INR.format(Math.max(0, Math.round(n)));
+
+function hourMode(spec){
+  if(!spec) return {kind:"continuous",min:1,max:24,presets:DATA.defaultHourPresets.slice()};
+  const a = spec.allowedHours;
+  if(a && a.length === 1) return {kind:"single",hours:a[0]};
+  if(a && a.length > 1) return {kind:"stops",stops:a.slice().sort((x,y)=>x-y)};
+  return {kind:"continuous",min:1,max:24,presets:DATA.defaultHourPresets.slice()};
+}
+function snapHours(spec,h){
+  const m = hourMode(spec);
+  if(m.kind==="single") return m.hours;
+  if(m.kind==="stops") return m.stops.reduce((b,s)=>Math.abs(s-h)<Math.abs(b-h)?s:b);
+  return Math.min(m.max,Math.max(m.min,Math.round(h)));
+}
+function dailyRate(spec,h){
+  if(!spec) return null;
+  if(spec.type==="slab") return spec.slabs[h] ?? null;
+  if(spec.allowedHours && !spec.allowedHours.includes(h)) return null;
+  return spec.hourlyRate * h;
+}
+function effHourly(spec,h){ const d=dailyRate(spec,h); return (d===null||h<=0)?null:Math.round(d/h); }
+function monthly(spec,h,d){ const r=dailyRate(spec,h); return (r===null||d<=0)?0:Math.round(r*d); }
+function defaultSpeciality(p){ return p.specialities.find(s=>hourMode(s).kind!=="single") ?? p.specialities[0]; }
+function defaultHours(spec){
+  const m = hourMode(spec);
+  if(m.kind==="single") return m.hours;
+  if(m.kind==="stops") return m.stops[Math.floor((m.stops.length-1)/2)];
+  return 8;
+}
+function nextStepUp(spec,h,days){
+  if(!spec) return null;
+  const m = hourMode(spec); let n = null;
+  if(m.kind==="stops") n = m.stops.find(s=>s>h) ?? null;
+  else if(m.kind==="continuous") n = h<m.max ? h+1 : null;
+  if(n===null) return null;
+  const up = monthly(spec,n,days) - monthly(spec,h,days);
+  return up>0 ? {hours:n,uplift:up} : null;
+}
+
+/* ---- state ---- */
+let profession = DATA.professions[0];
+let speciality = defaultSpeciality(profession);
+let hours = defaultHours(speciality);
+let days = 25;
+
+const $ = (id) => document.getElementById(id);
+const svg = (paths) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths+'</svg>';
+
+/* ---- animated figure: eases from whatever is on screen, so it chases the thumb ---- */
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let shown = 0, raf = null;
+function animateTo(target){
+  if(reduceMotion){ shown = target; paint(target); return; }
+  const from = shown, delta = target - from;
+  if(delta === 0) return;
+  if(raf) cancelAnimationFrame(raf);
+  const t0 = performance.now(), dur = 420;
+  const tick = (now) => {
+    const t = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-t,3);
+    shown = Math.round(from + delta*e);
+    paint(shown);
+    if(t<1) raf = requestAnimationFrame(tick); else raf = null;
+  };
+  raf = requestAnimationFrame(tick);
+}
+function paint(v){ const s = "₹"+fmt(v); $("amount").textContent = s; $("mobileTotal").textContent = s; }
+
+/* ---- render ---- */
+function renderProfessions(){
+  $("professions").innerHTML = DATA.professions.map(p => `
+    <button class="tile" type="button" role="radio" aria-checked="${p.id===profession.id}"
+            aria-label="${p.name}" data-id="${p.id}">
+      ${svg(ICONS[p.id]||"")}
+      <span class="name">${p.name}</span>
+      <span class="tag">${p.tagline}</span>
+    </button>`).join("");
+}
+function renderSpecialities(){
+  $("specialities").innerHTML = profession.specialities.map(s => `
+    <button class="pill" type="button" role="radio" aria-checked="${s.id===speciality.id}"
+            data-id="${s.id}">${s.name}</button>`).join("");
+  $("blurb").textContent = speciality ? speciality.blurb : "";
+}
+function renderHours(){
+  const m = hourMode(speciality);
+  $("hoursReadout").textContent = hours + "h";
+
+  if(m.kind === "single"){
+    $("sliderBlock").classList.add("hidden");
+    $("singleNotice").classList.remove("hidden");
+    $("singleNotice").innerHTML = `Billed per visit — this speciality is a fixed <b>${m.hours}h</b> engagement.`;
+    return;
+  }
+  $("sliderBlock").classList.remove("hidden");
+  $("singleNotice").classList.add("hidden");
+
+  const stops = m.kind === "stops" ? m.stops : null;
+  const slider = $("slider");
+  if(stops){
+    slider.min = 0; slider.max = stops.length-1; slider.value = Math.max(0, stops.indexOf(hours));
+    $("endMin").textContent = stops[0]+"h"; $("endMax").textContent = stops[stops.length-1]+"h";
+  } else {
+    slider.min = m.min; slider.max = m.max; slider.value = hours;
+    $("endMin").textContent = m.min+"h"; $("endMax").textContent = m.max+"h";
+  }
+  slider.setAttribute("aria-valuetext", hours + " hours per day");
+
+  const lo = +slider.min, hi = +slider.max, val = +slider.value;
+  const pct = hi>lo ? ((val-lo)/(hi-lo))*100 : 100;
+  $("fill").style.width = pct + "%";
+
+  $("ticks").innerHTML = stops ? stops.map((s,i) => {
+    const left = (i/(stops.length-1))*100;
+    const on = i <= val;
+    return `<span class="tick" style="left:${left}%;background:${on?"rgba(255,255,255,.75)":"rgba(107,114,128,.35)"}"></span>`;
+  }).join("") : "";
+
+  const presets = stops || m.presets;
+  $("hourChips").innerHTML = presets.map(p =>
+    `<button class="chip" type="button" data-h="${p}" aria-pressed="${p===hours}">${p}h</button>`).join("");
+}
+function renderResult(){
+  const d = dailyRate(speciality, hours);
+  const eh = effHourly(speciality, hours);
+  const total = monthly(speciality, hours, days);
+
+  $("perDay").textContent  = d===null  ? "—" : "₹"+fmt(d);
+  $("perHour").textContent = eh===null ? "—" : "₹"+fmt(eh)+"/h";
+  $("pattern").textContent = hours+"h × "+(days||0)+" days";
+
+  const tier = $("tier");
+  if(speciality && speciality.type === "slab"){
+    tier.classList.remove("hidden");
+    tier.textContent = "Flat shift rate — "+hours+"h tier";
+  } else tier.classList.add("hidden");
+
+  const up = nextStepUp(speciality, hours, days);
+  const nudge = $("nudge");
+  if(up){
+    nudge.classList.remove("hidden");
+    nudge.innerHTML = `Move to <b>${up.hours}h</b> and you add <span class="up">₹${fmt(up.uplift)}</span> a month.`;
+  } else nudge.classList.add("hidden");
+
+  animateTo(total);
+}
+function renderAll(){ renderProfessions(); renderSpecialities(); renderHours(); renderResult(); }
+
+/* ---- events ---- */
+$("professions").addEventListener("click", (e) => {
+  const b = e.target.closest(".tile"); if(!b) return;
+  profession = DATA.professions.find(p => p.id === b.dataset.id);
+  speciality = defaultSpeciality(profession);
+  hours = snapHours(speciality, hours);
+  renderAll();
+});
+$("specialities").addEventListener("click", (e) => {
+  const b = e.target.closest(".pill"); if(!b) return;
+  speciality = profession.specialities.find(s => s.id === b.dataset.id);
+  hours = snapHours(speciality, hours);
+  renderAll();
+});
+$("hourChips").addEventListener("click", (e) => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  hours = +b.dataset.h; renderHours(); renderResult();
+});
+$("slider").addEventListener("input", (e) => {
+  const m = hourMode(speciality);
+  hours = m.kind === "stops" ? m.stops[+e.target.value] : +e.target.value;
+  renderHours(); renderResult();
+});
+$("days").addEventListener("input", (e) => {
+  const raw = e.target.value;
+  if(raw === ""){ days = 0; } else {
+    const n = parseInt(raw, 10);
+    if(Number.isNaN(n)) return;
+    days = Math.min(31, Math.max(0, n));
+    if(days !== n) e.target.value = days;
+  }
+  renderDayChips(); renderResult();
+});
+function renderDayChips(){
+  $("dayChips").innerHTML = [20,25,30].map(d =>
+    `<button class="chip" type="button" data-d="${d}" aria-pressed="${d===days}">${d}</button>`).join("");
+}
+$("dayChips").addEventListener("click", (e) => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  days = +b.dataset.d; $("days").value = days; renderDayChips(); renderResult();
+});
+
+renderDayChips();
+renderAll();
+shown = monthly(speciality, hours, days);
+paint(shown);
+</script>
+</body>
+</html>
